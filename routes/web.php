@@ -7,6 +7,10 @@ use App\Http\Controllers\EmployeController;
 
 
 
+Route::get('/', function () {
+    return view('main.landing');
+});
+
 Route::middleware('auth.custom')->group(function () {
     Route::get('/register', [AuthController::class, 'register_show'])->name('register.show');
     Route::get('/login', [AuthController::class, 'login_show'])->name('login.show');
@@ -16,7 +20,7 @@ Route::middleware('auth.custom')->group(function () {
 });
 
 
-Route::middleware('auth.identify')->group(function() {
+Route::middleware('auth.identify')->group(function () {
     Route::get('/employee', [EmployeController::class, 'index'])->name('employer.index');
 
 

@@ -60,15 +60,24 @@
 
                         <!-- PROFILE MOBILE -->
                         <div class="d-lg-none mt-3 text-center">
-                            <span class="me-2">Adrian</span>
-                            <i class="fa-solid fa-circle-user fs-4"></i>
+                            <div class="mb-2">
+                                <span class="me-2">{{ $user['name'] }}</span>
+                                <i class="fa-solid fa-circle-user fs-4"></i>
+                            </div>
+                            <a href="{{ route('logout') }}" class="btn btn-sm btn-outline-danger">Logout</a>
                         </div>
                     </div>
 
                     <!-- PROFILE DESKTOP -->
-                    <div class="d-none d-lg-flex align-items-center gap-2 ms-3">
-                        <span>{{ $user['name'] }}</span>
-                        <i class="fa-solid fa-circle-user fs-4"></i>
+                    <div class="d-none d-lg-flex align-items-center gap-2 ms-3 dropdown">
+                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-dark" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>{{ $user['name'] }}</span>
+                            <i class="fa-solid fa-circle-user fs-4"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ route('logout') }}">Logout</a></li>
+                        </ul>
                     </div>
 
                 </div>
