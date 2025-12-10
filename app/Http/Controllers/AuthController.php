@@ -54,20 +54,40 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        $response = Http::post('http://localhost:3000/api/v1/login', $validated);
-        if ($response->failed()) {
+        $response = Http::withHeaders([
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/json'
+        ])->post('http://localhost:3000/api/v1/login', $validated);
+
+        $data = $response->json();
+
+        $user = $data['user'];
+
+        session([
+            'token' => $data['token'],
+            'user'  => $user,
+        ]);
+
+        switch ($user['role']) {
+            case 'EMPLOYER':
+                return redirect()->route('employer.index');
+
+            case 'WORKER':
+                return redirect()->route('main.quest');
+
+            default:
+                session()->flush();
                 return back()->withErrors([
-                    'api_error' => 'Email atau password salah',
+                    'api_error' => 'Role tidak dikenal.',
                 ]);
-            }
-
-            $data = $response->json();
-
-            session([
-                'token' => $data['token'],
-                'user' => $data['user'],
-            ]);
-
-            return redirect()->route('index');
+        }
     }
+
+    public function logout(Request $request)
+    {
+        session()->flush();
+
+        return redirect()->route('login.show')->with('success', 'Anda telah logout.');
+    }
+
 }

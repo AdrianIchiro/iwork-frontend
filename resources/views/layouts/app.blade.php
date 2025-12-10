@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'My App' }}</title>
+    <title>{{ $title ?? 'IWORK' }}</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -34,6 +34,45 @@
     <div class="main-container">
         {{-- Main Content --}}
         <main class="flex-fill">
+            {{-- NAVBAR --}}
+            <nav class="navbar navbar-expand-lg bg-white py-3 shadow-sm">
+                <div class="container">
+
+                    <a class="navbar-brand" href="#">
+                        <img src="{{ asset('images/logo.png') }}" alt="logo" width="100px">
+                    </a>
+
+                    <!-- TOGGLER -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars fs-3"></i> <!-- FA icon biar kelihatan -->
+                    </button>
+
+                    <!-- COLLAPSE -->
+                    <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+
+                        <ul class="navbar-nav gap-4 mt-3 mt-lg-0 text-center">
+                            <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Quest</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                        </ul>
+
+                        <!-- PROFILE MOBILE -->
+                        <div class="d-lg-none mt-3 text-center">
+                            <span class="me-2">Adrian</span>
+                            <i class="fa-solid fa-circle-user fs-4"></i>
+                        </div>
+                    </div>
+
+                    <!-- PROFILE DESKTOP -->
+                    <div class="d-none d-lg-flex align-items-center gap-2 ms-3">
+                        <span>{{ $user['name'] }}</span>
+                        <i class="fa-solid fa-circle-user fs-4"></i>
+                    </div>
+
+                </div>
+            </nav>
             @yield('content')
         </main>
     </div>
