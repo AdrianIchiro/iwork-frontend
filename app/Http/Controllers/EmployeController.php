@@ -12,4 +12,9 @@ class EmployeController extends Controller
 
         return view('employeer.main', compact('user'));
     }
+
+    public function quest()
+    {
+        return view('employeer.quest');
+    }
 }

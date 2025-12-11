@@ -138,7 +138,8 @@
             <i class="fa-solid fa-chart-line"></i> Dashboard
         </a>
 
-        <a href="" class="menu-item">
+        <a href="{{ route('employer.quest') }}"
+            class="menu-item {{ request()->routeIs('employer.quest') ? 'menu-active' : '' }}">
             <i class="fa-solid fa-plus"></i> Tambah Quest
         </a>
 
@@ -161,7 +162,8 @@
                 <i class="fa-solid fa-chart-line"></i> Dashboard
             </a>
 
-            <a href="" class="menu-item">
+            <a href="{{ route('employer.quest') }}"
+                class="menu-item {{ request()->routeIs('employer.quest') ? 'menu-active' : '' }}">
                 <i class="fa-solid fa-plus"></i> Tambah Quest
             </a>
 
@@ -174,6 +176,7 @@
 
     <!-- CONTENT -->
     <div class="content">
+        <h3 class="fw-bold mb-4">Employer Dashboard</h3>
         @yield('content')
     </div>
 

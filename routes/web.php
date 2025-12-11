@@ -18,6 +18,7 @@ Route::middleware('auth.custom')->group(function () {
 
 Route::middleware('auth.identify')->group(function() {
     Route::get('/employee', [EmployeController::class, 'index'])->name('employer.index');
+    Route::get('/employee/quest', [EmployeController::class, 'quest'])->name('employer.quest');
 
 
     Route::get('/quest', [MainController::class, 'quest'])->name('main.quest')->middleware('auth.custom');
