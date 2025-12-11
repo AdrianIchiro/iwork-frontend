@@ -7,15 +7,17 @@ use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
-    public function register_show() {
+    public function register_show()
+    {
         return view('auth.register');
     }
 
-    public function login_show() {
+    public function login_show()
+    {
         return view('auth.login');
     }
 
-   public function register(Request $request)
+    public function register(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required',
@@ -55,8 +57,8 @@ class AuthController extends Controller
         ]);
 
         $response = Http::withHeaders([
-        'Accept' => 'application/json',
-        'Content-Type' => 'application/json'
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json'
         ])->post('http://localhost:3000/api/v1/login', $validated);
 
         $data = $response->json();
@@ -65,7 +67,7 @@ class AuthController extends Controller
 
         session([
             'token' => $data['token'],
-            'user'  => $user,
+            'user' => $user,
         ]);
 
         switch ($user['role']) {
