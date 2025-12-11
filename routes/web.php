@@ -7,9 +7,7 @@ use App\Http\Controllers\EmployeController;
 
 
 
-Route::get('/', function () {
-    return view('main.landing');
-});
+
 
 Route::middleware('auth.custom')->group(function () {
     Route::get('/register', [AuthController::class, 'register_show'])->name('register.show');
@@ -23,12 +21,14 @@ Route::middleware('auth.custom')->group(function () {
 Route::middleware('auth.identify')->group(function () {
     Route::get('/employee', [EmployeController::class, 'index'])->name('employer.index');
     Route::get('/employee/quest', [EmployeController::class, 'quest'])->name('employer.quest');
+    Route::post('/employee/quest', [EmployeController::class, 'store_quest'])->name('quest.store');
 
 
     Route::get('/quest', [MainController::class, 'quest'])->name('main.quest')->middleware('auth.custom');
-
+    Route::get('/', [MainController::class, 'index'])->name('main.index');
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
 });
 
 

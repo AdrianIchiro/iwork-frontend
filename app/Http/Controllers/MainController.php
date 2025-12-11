@@ -23,4 +23,11 @@ class MainController extends Controller
         $quests = $response->json('data');
         return view('main.quest', compact('user', 'quests', 'search'));
     }
+
+    public function index()
+    {
+        $user = session('user');
+
+        return view('main.landing');
+    }
 }

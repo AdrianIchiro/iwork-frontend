@@ -70,8 +70,8 @@
 
                     <!-- PROFILE DESKTOP -->
                     <div class="d-none d-lg-flex align-items-center gap-2 ms-3 dropdown">
-                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-dark" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-dark"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span>{{ $user['name'] }}</span>
                             <i class="fa-solid fa-circle-user fs-4"></i>
                         </a>
