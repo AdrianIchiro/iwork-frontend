@@ -12,8 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'auth.custom' => \App\Http\Middleware\RedirectMiddleware::class,
-            'auth.identify' => \App\Http\Middleware\AuthIdentify::class
+            'auth.identify' => \App\Http\Middleware\AuthIdentify::class,
+            'auth.employer' => \App\Http\Middleware\EnsureEmployer::class,
+            'auth.worker' => \App\Http\Middleware\EnsureWorker::class,
+            'auth.check' => \App\Http\Middleware\AuthCheck::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -9,40 +9,77 @@
         </a>
     </div>
 
-
     {{-- TABEL QUEST --}}
-    <div class="card-custom p-0">
 
-        {{-- WRAPPER RESPONSIVE --}}
-        <div class="table-responsive">
-            <table class="table mb-0 table-hover align-middle">
-                <thead style="background: #f8f9fa;">
+    {{-- ALERT ERROR --}}
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    {{-- ALERT SUCCESS --}}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <div class="card-custom p-0 shadow-sm rounded-3">
+
+        {{-- MOBILE SCROLL WRAPPER --}}
+        <div class="table-scroll">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
                     <tr>
-                        <th class="py-3">Judul</th>
+                        <th class="ps-3">Judul</th>
                         <th>Tier</th>
                         <th>Max Submit</th>
                         <th>Deadline</th>
-                        <th class="text-end">Aksi</th>
+                        <th class="text-end pe-3">Aksi</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {{-- Jika ada data --}}
                     @forelse ($quests as $q)
                         <tr>
-                            <td class="py-3">{{ $q['title'] }}</td>
-                            <td>{{ $q['tier'] }}</td>
-                            <td>{{ $q['maxSubmissions'] }}</td>
-                            <td>{{ $q['deadline'] ? \Carbon\Carbon::parse($q['deadline'])->format('d M Y H:i') : '-' }}</td>
+                            <td class="ps-3 fw-semibold">{{ $q['title'] }}</td>
 
-                            <td class="text-end">
-                                <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a href="#" class="btn btn-sm btn-outline-danger ms-2">Hapus</a>
+                            <td>
+                                <span
+                                    class="badge
+                                        @if ($q['tier'] === 'HIGH') bg-danger-subtle text-danger
+                                        @elseif ($q['tier'] === 'MID')
+                                            bg-warning-subtle text-warning
+                                        @else
+                                            bg-success-subtle text-success @endif
+                                    ">
+                                    {{ strtoupper($q['tier']) }}
+                                </span>
+                            </td>
+
+                            <td>{{ $q['maxSubmissions'] }}</td>
+
+                            <td class="text-nowrap">
+                                {{ $q['deadline'] ? \Carbon\Carbon::parse($q['deadline'])->format('d M Y H:i') : '-' }}
+                            </td>
+
+                            <td class="text-end pe-3">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                        Edit
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-danger">
+                                        Hapus
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="5" class="text-center text-muted py-4">
                                 Belum ada quest yang dibuat
                             </td>
                         </tr>
@@ -51,8 +88,8 @@
             </table>
         </div>
 
-
     </div>
+
 
     <!-- Modal Tambah Quest -->
     <div class="modal fade" id="modalTambahQuest" tabindex="-1" aria-hidden="true">

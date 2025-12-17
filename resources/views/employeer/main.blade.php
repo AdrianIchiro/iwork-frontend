@@ -7,7 +7,7 @@
         <div class="col-md-4">
             <div class="card-custom">
                 <h6 class="text-muted mb-1">Total Quest Dibuat</h6>
-                <h2 class="fw-bold">0</h2>
+                <h2 class="fw-bold">{{ $questCount }}</h2>
             </div>
         </div>
 

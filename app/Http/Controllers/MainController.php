@@ -13,7 +13,7 @@ class MainController extends Controller
 
         $search = $request->query('search');
 
-        $response = Http::get('http://localhost:3000/api/v1/quests', [
+        $response = Http::get(env('API_URL') . 'quests', [
             'search' => $search
         ]);
 

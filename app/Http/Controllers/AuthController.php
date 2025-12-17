@@ -29,7 +29,7 @@ class AuthController extends Controller
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-            ])->post('http://localhost:3000/api/v1/register', $validated);
+            ])->post(env('API_URL') . 'register', $validated);
 
             if ($response->failed()) {
 
@@ -59,7 +59,7 @@ class AuthController extends Controller
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json'
-        ])->post('http://localhost:3000/api/v1/login', $validated);
+        ])->post(env('API_URL') . 'login', $validated);
 
         $data = $response->json();
 

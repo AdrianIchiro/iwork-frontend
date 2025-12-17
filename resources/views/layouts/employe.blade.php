@@ -19,6 +19,54 @@
             font-family: 'Inter', sans-serif;
         }
 
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-scroll table {
+            min-width: 700px;
+            /* supaya scroll muncul di mobile */
+        }
+
+        /* Optional: scrollbar lebih halus */
+        .table-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        /* LOGO GENERAL */
+        .logo-desktop,
+        .logo-mobile,
+        .logo-offcanvas {
+            object-fit: contain;
+        }
+
+        /* SIDEBAR DESKTOP */
+        .logo-desktop {
+            width: 120px;
+            height: auto;
+            margin-bottom: 30px;
+        }
+
+        /* NAVBAR MOBILE */
+        .logo-mobile {
+            height: 32px;
+            width: auto;
+        }
+
+        /* OFFCANVAS MOBILE */
+        .logo-offcanvas {
+            height: 36px;
+            width: auto;
+        }
+
+
+
         /* SIDEBAR DESKTOP */
         .sidebar {
             height: 100vh;
@@ -126,12 +174,12 @@
         <button class="btn" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
             <i class="fa-solid fa-bars"></i>
         </button>
-        <h5 class="fw-bold m-0">IWork Employer</h5>
+        <img src="{{ asset('images/logo.png') }}" alt="logo" class="logo-mobile">
     </div>
 
     <!-- SIDEBAR DESKTOP -->
     <div class="sidebar d-none d-lg-block">
-        <h4>IWork Employer</h4>
+        <img src="{{ asset('images/logo.png') }}" alt="logo" class="logo-desktop">
 
         <a href="{{ route('employer.index') }}"
             class="menu-item {{ request()->routeIs('employer.index') ? 'menu-active' : '' }}">
@@ -143,7 +191,7 @@
             <i class="fa-solid fa-plus"></i> Tambah Quest
         </a>
 
-        <a href="" class="menu-item">
+        <a href="{{ route('logout') }}" class="menu-item">
             <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
     </div>
@@ -151,7 +199,7 @@
     <!-- SIDEBAR MOBILE (Offcanvas) -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas">
         <div class="offcanvas-header">
-            <h5 class="fw-bold">IWork Employer</h5>
+            <img src="{{ asset('images/logo.png') }}" alt="">
             <button class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
 
@@ -167,7 +215,7 @@
                 <i class="fa-solid fa-plus"></i> Tambah Quest
             </a>
 
-            <a href="" class="menu-item">
+            <a href="{{ route('logout') }}" class="menu-item">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout
             </a>
 
