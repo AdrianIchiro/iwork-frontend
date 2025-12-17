@@ -21,7 +21,7 @@ Route::middleware(['auth.identify', 'auth.employer'])->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::middleware(['auth.identify', 'auth.employer'])->group(function () {
+Route::middleware(['auth.identify', 'auth.worker'])->group(function () {
     Route::get('/', [MainController::class, 'index'])->name('main.index');
     Route::get('/quest', [MainController::class, 'quest'])->name('main.quest');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');

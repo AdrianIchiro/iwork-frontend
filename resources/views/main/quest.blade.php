@@ -22,30 +22,27 @@
                 <div class="col-md-3">
                     <div class="job-card">
 
-                        <!-- TITLE -->
-                        <h6>{{ $q['title'] }}</h6>
+                        <div>
+                            <h6>{{ $q['title'] }}</h6>
 
-                        <!-- BADGE LEVEL -->
-                        <span class="level-badge {{ strtolower($q['tier']) }}">
-                            {{ $q['tier'] }} Level
-                        </span>
+                            <span class="level-badge {{ strtolower($q['tier']) }}">
+                                {{ $q['tier'] }} Level
+                            </span>
 
-                        <!-- DESCRIPTION -->
-                        <p class="mt-3 mb-1" style="font-size: 14px;">
-                            {{ $q['description'] }}
-                        </p>
+                            <p class="mt-3 mb-1" style="font-size: 14px;">
+                                {{ $q['description'] }}
+                            </p>
 
-                        <!-- DEADLINE -->
-                        <small class="text-muted">
-                            Deadline:
-                            @if ($q['deadline'])
-                                {{ \Carbon\Carbon::parse($q['deadline'])->format('d F Y') }}
-                            @else
-                                Tidak ada deadline
-                            @endif
-                        </small>
+                            <small class="text-muted">
+                                Deadline:
+                                @if ($q['deadline'])
+                                    {{ \Carbon\Carbon::parse($q['deadline'])->format('d F Y') }}
+                                @else
+                                    Tidak ada deadline
+                                @endif
+                            </small>
+                        </div>
 
-                        <!-- BUTTON -->
                         <button class="btn btn-outline-info mt-3 btn-bid">
                             Bid
                         </button>
@@ -89,11 +86,31 @@
 
         /* CARD JOB */
         .job-card {
-            border-radius: 10px;
-            border: 1px solid #dfdfdf;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             padding: 20px;
-            transition: 0.2s;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .job-card h6 {
+            min-height: 42px;
+            /* konsisten */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .job-card p {
+            min-height: 60px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .job-card:hover {
