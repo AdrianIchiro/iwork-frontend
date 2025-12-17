@@ -53,8 +53,8 @@
                     <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
 
                         <ul class="navbar-nav gap-4 mt-3 mt-lg-0 text-center">
-                            <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Quest</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('main.index') }}">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('main.quest') }}">Quest</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">About</a></li>
                         </ul>
 

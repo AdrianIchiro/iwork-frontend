@@ -28,6 +28,6 @@ class MainController extends Controller
     {
         $user = session('user');
 
-        return view('main.landing');
+        return view('main.landing', compact('user'));
     }
 }
