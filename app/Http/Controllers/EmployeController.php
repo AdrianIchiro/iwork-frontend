@@ -196,28 +196,28 @@ class EmployeController extends Controller
 
 
         $request->validate([
-            'title' => 'required|string',
+            'title'       => 'required|string',
             'description' => 'required|string',
-            'location' => 'required|string',
-            'salary' => 'required|numeric',
-            'jobType' => 'required|string',
+            'location'    => 'required|string',
+            'salary'      => 'required|numeric',
+            'jobType'     => 'required|string',
         ]);
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
         ])->post(env('API_URL') . 'jobs', [
-                    'title' => $request->title,
-                    'description' => $request->description,
-                    'location' => $request->location,
-                    'salary' => $request->salary,
-                    'jobType' => $request->jobType,
-                    'maxApplicants' => $request->maxApplicants,
-                    'deadline' => $request->deadline,
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
-                ]);
+            'title'          => $request->title,
+            'description'    => $request->description,
+            'location'       => $request->location,
+            'salary'         => $request->salary,
+            'jobType'        => $request->jobType,
+            'maxApplicants' => $request->maxApplicants,
+            'deadline'       => $request->deadline,
+            'latitude'       => $request->latitude,
+            'longitude'      => $request->longitude,
+        ]);
 
         if ($response->failed()) {
             return back()
@@ -234,4 +234,5 @@ class EmployeController extends Controller
 
         return back()->with('success', 'Job berhasil dibuat.');
     }
+
 }
