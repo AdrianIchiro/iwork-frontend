@@ -18,6 +18,8 @@ Route::middleware(['auth.identify', 'auth.employer'])->group(function () {
     Route::get('/employee', [EmployeController::class, 'index'])->name('employer.index');
     Route::get('/employee/quest', [EmployeController::class, 'quest'])->name('employer.quest');
     Route::post('/employee/quest', [EmployeController::class, 'store_quest'])->name('quest.store');
+    Route::get('/employee/job', [EmployeController::class, 'job'])->name('employer.job');
+    Route::post('/employee/job', [EmployeController::class, 'store_job'])->name('job.store');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

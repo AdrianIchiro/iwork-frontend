@@ -83,4 +83,68 @@ class EmployeController extends Controller
         return back()->with('success', 'Quest berhasil dibuat!');
     }
 
+    public function job()
+    {
+         $userId = session('user')['id'];
+         $token  = session('token');
+
+         $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Accept'        => 'application/json',
+        ])->get(env('API_URL') . 'jobs');
+
+            $jobs = collect($response->json()['data'] ?? [])
+                ->filter(function ($job) use ($userId) {
+                    return isset($job['employer']['userId'])
+                        && $job['employer']['userId'] == $userId;
+                });
+
+            return view('employeer.job', compact('jobs'));
+    }
+
+    public function store_job(Request $request)
+    {
+        $token = session('token');
+
+
+        $request->validate([
+            'title'       => 'required|string',
+            'description' => 'required|string',
+            'location'    => 'required|string',
+            'salary'      => 'required|numeric',
+            'jobType'     => 'required|string',
+        ]);
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
+        ])->post(env('API_URL') . 'jobs', [
+            'title'          => $request->title,
+            'description'    => $request->description,
+            'location'       => $request->location,
+            'salary'         => $request->salary,
+            'jobType'        => $request->jobType,
+            'maxApplicants' => $request->maxApplicants,
+            'deadline'       => $request->deadline,
+            'latitude'       => $request->latitude,
+            'longitude'      => $request->longitude,
+        ]);
+
+        if ($response->failed()) {
+            return back()
+                ->withInput()
+                ->with('error', $response->json('message') ?? 'Gagal membuat job.');
+        }
+
+
+        $paymentUrl = $response->json('payment.redirect_url');
+
+        if ($paymentUrl) {
+            return redirect()->away($paymentUrl);
+        }
+
+        return back()->with('success', 'Job berhasil dibuat.');
+    }
+
 }
