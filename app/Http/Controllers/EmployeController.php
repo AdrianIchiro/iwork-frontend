@@ -25,7 +25,7 @@ class EmployeController extends Controller
         return view('employeer.main', compact('user', 'questCount'));
     }
 
-   public function quest()
+    public function quest()
     {
         $userId = session('user')['id'];
 
@@ -45,20 +45,20 @@ class EmployeController extends Controller
     {
         $token = session('token');
 
-       $response = Http::withHeaders([
+        $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
         ])->post(env('API_URL') . 'quests', [
-            'title'          => $request->title,
-            'description'    => $request->description,
-            'tier'           => $request->tier,
-            'maxSubmissions' => $request->maxSubmissions,
-            'deadline'       => $request->deadline,
-            'quotaType'      => $request->quotaType,
-        ]);
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'tier' => $request->tier,
+                    'maxSubmissions' => $request->maxSubmissions,
+                    'deadline' => $request->deadline,
+                    'quotaType' => $request->quotaType,
+                ]);
 
-         if ($response->failed()) {
+        if ($response->failed()) {
 
             $apiMessage = $response->json('message');
 
@@ -83,23 +83,111 @@ class EmployeController extends Controller
         return back()->with('success', 'Quest berhasil dibuat!');
     }
 
+    public function managePlan()
+    {
+        $user = session('user');
+        return view('employeer.manage-plan', compact('user'));
+    }
+
+    public function submissions()
+    {
+        $user = session('user');
+        $token = session('token');
+
+        $response = Http::withToken($token)->get(env('API_URL') . 'quests/employer-submissions');
+
+        // Debug: Log the response
+        \Log::info('Employer Submissions API Response', [
+            'status' => $response->status(),
+            'body' => $response->json(),
+            'token' => $token ? 'present' : 'missing'
+        ]);
+
+        $quests = $response->json('data') ?? [];
+
+        return view('employeer.submissions', compact('user', 'quests'));
+    }
+
+    public function assessSubmission(Request $request, $submissionId)
+    {
+        $token = session('token');
+
+        $response = Http::withToken($token)
+            ->put(env('API_URL') . 'submissions/' . $submissionId . '/assess', [
+                'isApproved' => $request->isApproved === 'true',
+                'rating' => (int) $request->rating,
+                'feedback' => $request->feedback,
+            ]);
+
+        if ($response->successful()) {
+            return back()->with('success', 'Assessment berhasil disimpan!');
+        }
+
+        return back()->withErrors(['assess_error' => $response->json('message') ?? 'Gagal menyimpan assessment.']);
+    }
+
+    public function updateQuest(Request $request, $questId)
+    {
+        $token = session('token');
+
+        $response = Http::withToken($token)
+            ->put(env('API_URL') . 'quests/' . $questId, [
+                'title' => $request->title,
+                'description' => $request->description,
+                'tier' => $request->tier,
+                'maxSubmissions' => $request->maxSubmissions,
+                'deadline' => $request->deadline,
+            ]);
+
+        if ($response->failed()) {
+            dd([
+                'url' => env('API_URL') . 'quests/' . $questId,
+                'status' => $response->status(),
+                'error_from_api' => $response->json(),
+                'sent_data' => $request->all()
+            ]);
+        }
+
+        if ($response->successful()) {
+            return back()->with('success', 'Quest berhasil diupdate!');
+        }
+
+        return back()->with('error', $response->json('message') ?? 'Gagal mengupdate quest.');
+    }
+
+    public function deleteQuest($questId)
+    {
+        $token = session('token');
+
+        $response = Http::withToken($token)
+            ->delete(env('API_URL') . 'quests/' . $questId);
+
+        if ($response->successful()) {
+            return back()->with('success', 'Quest berhasil dihapus!');
+        }
+
+        return back()->with('error', $response->json('message') ?? 'Gagal menghapus quest.');
+    }
+
+
+
     public function job()
     {
-         $userId = session('user')['id'];
-         $token  = session('token');
+        $userId = session('user')['id'];
+        $token = session('token');
 
-         $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token,
-                'Accept'        => 'application/json',
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json',
         ])->get(env('API_URL') . 'jobs');
 
-            $jobs = collect($response->json()['data'] ?? [])
-                ->filter(function ($job) use ($userId) {
-                    return isset($job['employer']['userId'])
-                        && $job['employer']['userId'] == $userId;
-                });
+        $jobs = collect($response->json()['data'] ?? [])
+            ->filter(function ($job) use ($userId) {
+                return isset($job['employer']['userId'])
+                    && $job['employer']['userId'] == $userId;
+            });
 
-            return view('employeer.job', compact('jobs'));
+        return view('employeer.job', compact('jobs'));
     }
 
     public function store_job(Request $request)

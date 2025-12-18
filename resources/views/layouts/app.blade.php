@@ -55,6 +55,8 @@
                         <ul class="navbar-nav gap-4 mt-3 mt-lg-0 text-center">
                             <li class="nav-item"><a class="nav-link" href="{{ route('main.index') }}">Home</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('main.quest') }}">Quest</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('main.my-quests') }}">My Quests</a>
+                            </li>
                             <li class="nav-item"><a class="nav-link" href="#">About</a></li>
                         </ul>
 
@@ -70,8 +72,8 @@
 
                     <!-- PROFILE DESKTOP -->
                     <div class="d-none d-lg-flex align-items-center gap-2 ms-3 dropdown">
-                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-dark"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-dark" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <span>{{ $user['name'] }}</span>
                             <i class="fa-solid fa-circle-user fs-4"></i>
                         </a>

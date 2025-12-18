@@ -200,6 +200,16 @@
             <i class="fa-solid fa-briefcase"></i> Tambah Job
         </a>
 
+        <a href="{{ route('employer.submissions') }}"
+            class="menu-item {{ request()->routeIs('employer.submissions') ? 'menu-active' : '' }}">
+            <i class="fa-solid fa-clipboard-check"></i> Submissions
+        </a>
+
+        <a href="{{ route('employer.manage-plan') }}"
+            class="menu-item {{ request()->routeIs('employer.manage-plan') ? 'menu-active' : '' }}">
+            <i class="fa-solid fa-crown"></i> Manage Plan
+        </a>
+
         <a href="{{ route('logout') }}" class="menu-item">
             <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
@@ -224,6 +234,21 @@
                 <i class="fa-solid fa-plus"></i> Tambah Quest
             </a>
 
+            <a href="{{ route('employer.job') }}"
+                class="menu-item {{ request()->routeIs('employer.job') ? 'menu-active' : '' }}">
+                <i class="fa-solid fa-briefcase"></i> Tambah Job
+            </a>
+
+            <a href="{{ route('employer.submissions') }}"
+                class="menu-item {{ request()->routeIs('employer.submissions') ? 'menu-active' : '' }}">
+                <i class="fa-solid fa-clipboard-check"></i> Submissions
+            </a>
+
+            <a href="{{ route('employer.manage-plan') }}"
+                class="menu-item {{ request()->routeIs('employer.manage-plan') ? 'menu-active' : '' }}">
+                <i class="fa-solid fa-crown"></i> Manage Plan
+            </a>
+
             <a href="{{ route('logout') }}" class="menu-item">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout
             </a>
@@ -240,6 +265,88 @@
     @stack('scripts')
 
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        let map = null;
+        let marker = null;
+
+        const modal = document.getElementById('modalTambahJob');
+
+        modal.addEventListener('shown.bs.modal', function () {
+
+            // Jika map sudah pernah dibuat
+            if (map) {
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 200);
+                return;
+            }
+
+            // Default Indonesia
+            const defaultLat = -6.200000;
+            const defaultLng = 106.816666;
+
+            map = L.map('map').setView([defaultLat, defaultLng], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(map);
+
+            marker = L.marker([defaultLat, defaultLng]).addTo(map);
+
+            // Set default input
+            document.getElementById('latitude').value = defaultLat;
+            document.getElementById('longitude').value = defaultLng;
+
+            // Klik peta
+            map.on('click', function (e) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lng = e.latlng.lng.toFixed(6);
+
+                marker.setLatLng(e.latlng);
+
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            });
+
+            // SEARCH
+            L.Control.geocoder({
+                defaultMarkGeocode: false
+            })
+                .on('markgeocode', function (e) {
+                    const latlng = e.geocode.center;
+                    map.setView(latlng, 16);
+                    marker.setLatLng(latlng);
+
+                    document.getElementById('latitude').value = latlng.lat.toFixed(6);
+                    document.getElementById('longitude').value = latlng.lng.toFixed(6);
+                })
+                .addTo(map);
+
+            // GPS AUTO
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (pos) {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        map.setView([lat, lng], 15);
+                        marker.setLatLng([lat, lng]);
+
+                        document.getElementById('latitude').value = lat.toFixed(6);
+                        document.getElementById('longitude').value = lng.toFixed(6);
+                    }
+                );
+            }
+
+            // Paksa refresh size
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 300);
+        });
+
+    });
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

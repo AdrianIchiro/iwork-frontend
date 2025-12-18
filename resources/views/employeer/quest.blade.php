@@ -48,14 +48,13 @@
                             <td class="ps-3 fw-semibold">{{ $q['title'] }}</td>
 
                             <td>
-                                <span
-                                    class="badge
-                                        @if ($q['tier'] === 'HIGH') bg-danger-subtle text-danger
-                                        @elseif ($q['tier'] === 'MID')
-                                            bg-warning-subtle text-warning
-                                        @else
-                                            bg-success-subtle text-success @endif
-                                    ">
+                                <span class="badge
+                                                @if ($q['tier'] === 'HIGH') bg-danger-subtle text-danger
+                                                @elseif ($q['tier'] === 'MID')
+                                                    bg-warning-subtle text-warning
+                                                @else
+                                                bg-success-subtle text-success @endif
+                                            ">
                                     {{ strtoupper($q['tier']) }}
                                 </span>
                             </td>
@@ -68,12 +67,72 @@
 
                             <td class="text-end pe-3">
                                 <div class="d-flex justify-content-end gap-2">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                        data-bs-target="#editModal{{ $q['id'] }}">
                                         Edit
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-outline-danger">
-                                        Hapus
-                                    </a>
+                                    </button>
+                                    <form action="{{ route('quest.delete', $q['id']) }}" method="POST"
+                                        onsubmit="return confirm('Yakin ingin menghapus quest ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Edit Modal -->
+                                <div class="modal fade" id="editModal{{ $q['id'] }}" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <form action="{{ route('quest.update', $q['id']) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title fw-semibold">Edit Quest</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body text-start">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Judul Quest</label>
+                                                        <input type="text" name="title" class="form-control"
+                                                            value="{{ $q['title'] }}" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Deskripsi</label>
+                                                        <textarea name="description" class="form-control" rows="3"
+                                                            required>{{ $q['description'] }}</textarea>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label">Tier</label>
+                                                            <select name="tier" class="form-control" required>
+                                                                <option value="ENTRY" {{ $q['tier'] === 'ENTRY' ? 'selected' : '' }}>Entry</option>
+                                                                <option value="MID" {{ $q['tier'] === 'MID' ? 'selected' : '' }}>
+                                                                    Mid</option>
+                                                                <option value="HIGH" {{ $q['tier'] === 'HIGH' ? 'selected' : '' }}>High</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label">Max Submissions</label>
+                                                            <input type="number" name="maxSubmissions" class="form-control"
+                                                                value="{{ $q['maxSubmissions'] }}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Deadline</label>
+                                                        <input type="datetime-local" name="deadline" class="form-control"
+                                                            value="{{ $q['deadline'] ? \Carbon\Carbon::parse($q['deadline'])->format('Y-m-d\TH:i') : '' }}">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Batal</button>
+                                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -114,7 +173,8 @@
 
                         <div class="mb-3">
                             <label class="form-label">Deskripsi</label>
-                            <textarea name="description" class="form-control" rows="3" required placeholder="Jelaskan tugas quest..."></textarea>
+                            <textarea name="description" class="form-control" rows="3" required
+                                placeholder="Jelaskan tugas quest..."></textarea>
                         </div>
 
                         <div class="row">
