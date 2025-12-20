@@ -102,4 +102,11 @@ class MainController extends Controller
 
         return back()->with('success', 'Quest berhasil dihapus dari daftar.');
     }
+
+    public function about()
+    {
+        $user = session('user');
+
+        return view('main.about', compact('user'));
+    }
 }

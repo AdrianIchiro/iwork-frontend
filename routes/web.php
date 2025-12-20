@@ -25,6 +25,8 @@ Route::middleware(['auth.identify', 'auth.employer'])->group(function () {
     Route::post('/employee/submissions/{submissionId}/assess', [EmployeController::class, 'assessSubmission'])->name('employer.assess');
     Route::get('/employee/job', [EmployeController::class, 'job'])->name('employer.job');
     Route::post('/employee/job', [EmployeController::class, 'store_job'])->name('job.store');
+    Route::post('/employee/subscription', [EmployeController::class, 'buySubscription'])->name('employer.subscription.buy');
+    Route::post('/employee/quota', [EmployeController::class, 'buyQuota'])->name('employer.quota.buy');
 });
 
 Route::middleware(['auth.identify', 'auth.worker'])->group(function () {
@@ -34,6 +36,7 @@ Route::middleware(['auth.identify', 'auth.worker'])->group(function () {
     Route::post('/quest/{questId}/bid', [MainController::class, 'bidQuest'])->name('quest.bid');
     Route::post('/quest/{questId}/submit', [MainController::class, 'submitQuest'])->name('quest.submit');
     Route::post('/quest/{submissionId}/hide', [MainController::class, 'hideQuest'])->name('quest.hide');
+    Route::get('/about', [MainController::class, 'about'])->name('main.about');
 });
 
 

@@ -10,9 +10,10 @@ class EmployeController extends Controller
     public function index()
     {
         $user = session('user');
-
+        $token = session('token');
         $userId = session('user')['id'];
 
+        // Get quest count
         $response = Http::get(env('API_URL') . 'quests');
 
         $questCount = collect($response->json()['data'] ?? [])
@@ -22,7 +23,15 @@ class EmployeController extends Controller
             })
             ->count();
 
-        return view('employeer.main', compact('user', 'questCount'));
+        // Get employer stats (one-time quota and total submissions)
+        $statsResponse = Http::withToken($token)->get(env('API_URL') . 'employer/stats');
+        $stats = $statsResponse->json('data') ?? [];
+
+        $onetimeQuota = $stats['onetimeQuota'] ?? 0;
+        $totalSubmissions = $stats['totalSubmissions'] ?? 0;
+        $subscription = $stats['subscription'] ?? null;
+
+        return view('employeer.main', compact('user', 'questCount', 'onetimeQuota', 'totalSubmissions', 'subscription'));
     }
 
     public function quest()
@@ -233,5 +242,69 @@ class EmployeController extends Controller
         }
 
         return back()->with('success', 'Job berhasil dibuat.');
+    }
+
+    /**
+     * Buy a subscription plan (ENTRY, MID, or HIGH)
+     */
+    public function buySubscription(Request $request)
+    {
+        $token = session('token');
+
+        $request->validate([
+            'tier' => 'required|in:ENTRY,MID,HIGH',
+        ]);
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->post(env('API_URL') . 'subscriptions', [
+                    'tier' => $request->tier,
+                ]);
+
+        if ($response->failed()) {
+            return back()->with('error', $response->json('message') ?? 'Gagal memproses langganan.');
+        }
+
+        $paymentUrl = $response->json('payment.redirect_url');
+
+        if ($paymentUrl) {
+            return redirect()->away($paymentUrl);
+        }
+
+        return back()->with('error', 'Tidak dapat memproses pembayaran.');
+    }
+
+    /**
+     * Buy one-time quota
+     */
+    public function buyQuota(Request $request)
+    {
+        $token = session('token');
+
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->post(env('API_URL') . 'quotas', [
+                    'quantity' => (int) $request->quantity,
+                ]);
+
+        if ($response->failed()) {
+            return back()->with('error', $response->json('message') ?? 'Gagal memproses pembelian kuota.');
+        }
+
+        $paymentUrl = $response->json('payment.redirect_url');
+
+        if ($paymentUrl) {
+            return redirect()->away($paymentUrl);
+        }
+
+        return back()->with('error', 'Tidak dapat memproses pembayaran.');
     }
 }
