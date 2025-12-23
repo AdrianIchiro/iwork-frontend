@@ -109,4 +109,67 @@ class MainController extends Controller
 
         return view('main.about', compact('user'));
     }
+
+    /**
+     * Show open jobs list
+     */
+    public function jobs(Request $request)
+    {
+        $user = session('user');
+        $search = $request->query('search');
+
+        $response = Http::get(env('API_URL') . 'jobs', [
+            'search' => $search
+        ]);
+
+        // Debug: Log the response
+        \Log::info('Jobs API Response', [
+            'status' => $response->status(),
+            'body' => $response->json(),
+            'url' => env('API_URL') . 'jobs'
+        ]);
+
+        $jobs = $response->json('data') ?? [];
+
+        return view('main.jobs', compact('user', 'jobs', 'search'));
+    }
+
+    /**
+     * Apply to a job
+     */
+    public function applyJob(Request $request, $jobId)
+    {
+        $token = session('token');
+
+        $response = Http::withToken($token)
+            ->post(env('API_URL') . 'jobs/' . $jobId . '/apply', []);
+
+        if ($response->successful()) {
+            return response()->json([
+                'success' => true,
+                'message' => $response->json('message'),
+                'data' => $response->json('data')
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => $response->json('message') ?? 'Gagal melamar pekerjaan.'
+        ], $response->status());
+    }
+
+    /**
+     * Show worker's job applications
+     */
+    public function myJobs()
+    {
+        $user = session('user');
+        $token = session('token');
+
+        $response = Http::withToken($token)->get(env('API_URL') . 'applications/my');
+
+        $applications = $response->json('data') ?? [];
+
+        return view('main.my-jobs', compact('user', 'applications'));
+    }
 }

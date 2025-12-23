@@ -25,6 +25,9 @@ Route::middleware(['auth.identify', 'auth.employer'])->group(function () {
     Route::post('/employee/submissions/{submissionId}/assess', [EmployeController::class, 'assessSubmission'])->name('employer.assess');
     Route::get('/employee/job', [EmployeController::class, 'job'])->name('employer.job');
     Route::post('/employee/job', [EmployeController::class, 'store_job'])->name('job.store');
+    Route::get('/employee/job/{jobId}', [EmployeController::class, 'jobDetail'])->name('employer.job.detail');
+    Route::get('/employee/job/{jobId}/applicants', [EmployeController::class, 'jobApplicants'])->name('employer.job.applicants');
+    Route::patch('/employee/applications/{applicationId}', [EmployeController::class, 'updateApplicationStatus'])->name('employer.application.update');
     Route::post('/employee/subscription', [EmployeController::class, 'buySubscription'])->name('employer.subscription.buy');
     Route::post('/employee/quota', [EmployeController::class, 'buyQuota'])->name('employer.quota.buy');
 });
@@ -37,6 +40,9 @@ Route::middleware(['auth.identify', 'auth.worker'])->group(function () {
     Route::post('/quest/{questId}/submit', [MainController::class, 'submitQuest'])->name('quest.submit');
     Route::post('/quest/{submissionId}/hide', [MainController::class, 'hideQuest'])->name('quest.hide');
     Route::get('/about', [MainController::class, 'about'])->name('main.about');
+    Route::get('/jobs', [MainController::class, 'jobs'])->name('main.jobs');
+    Route::post('/jobs/{jobId}/apply', [MainController::class, 'applyJob'])->name('job.apply');
+    Route::get('/my-jobs', [MainController::class, 'myJobs'])->name('main.my-jobs');
 });
 
 
