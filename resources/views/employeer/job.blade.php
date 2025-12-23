@@ -35,7 +35,6 @@
                         <th>Gaji</th>
                         <th>Tipe</th>
                         <th>Status</th>
-                        <th class="text-end pe-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,9 +54,6 @@
                                     {{ $job['status'] === 'UNPAID' ? 'bg-warning-subtle text-warning' : 'bg-success-subtle text-success' }}">
                                     {{ $job['status'] }}
                                 </span>
-                            </td>
-                            <td class="text-end pe-3">
-                                <span class="text-muted small">Menunggu pembayaran</span>
                             </td>
                         </tr>
                     @empty
