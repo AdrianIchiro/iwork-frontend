@@ -10,9 +10,10 @@ class EmployeController extends Controller
     public function index()
     {
         $user = session('user');
-
+        $token = session('token');
         $userId = session('user')['id'];
 
+        // Get quest count
         $response = Http::get(env('API_URL') . 'quests');
 
         $questCount = collect($response->json()['data'] ?? [])
@@ -22,7 +23,15 @@ class EmployeController extends Controller
             })
             ->count();
 
-        return view('employeer.main', compact('user', 'questCount'));
+        // Get employer stats (one-time quota and total submissions)
+        $statsResponse = Http::withToken($token)->get(env('API_URL') . 'employer/stats');
+        $stats = $statsResponse->json('data') ?? [];
+
+        $onetimeQuota = $stats['onetimeQuota'] ?? 0;
+        $totalSubmissions = $stats['totalSubmissions'] ?? 0;
+        $subscription = $stats['subscription'] ?? null;
+
+        return view('employeer.main', compact('user', 'questCount', 'onetimeQuota', 'totalSubmissions', 'subscription'));
     }
 
     public function quest()
@@ -173,19 +182,11 @@ class EmployeController extends Controller
 
     public function job()
     {
-        $userId = session('user')['id'];
         $token = session('token');
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-            'Accept' => 'application/json',
-        ])->get(env('API_URL') . 'jobs');
+        $response = Http::withToken($token)->get(env('API_URL') . 'employer/jobs');
 
-        $jobs = collect($response->json()['data'] ?? [])
-            ->filter(function ($job) use ($userId) {
-                return isset($job['employer']['userId'])
-                    && $job['employer']['userId'] == $userId;
-            });
+        $jobs = $response->json('data') ?? [];
 
         return view('employeer.job', compact('jobs'));
     }
@@ -196,28 +197,28 @@ class EmployeController extends Controller
 
 
         $request->validate([
-            'title'       => 'required|string',
+            'title' => 'required|string',
             'description' => 'required|string',
-            'location'    => 'required|string',
-            'salary'      => 'required|numeric',
-            'jobType'     => 'required|string',
+            'location' => 'required|string',
+            'salary' => 'required|numeric',
+            'jobType' => 'required|string',
         ]);
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
         ])->post(env('API_URL') . 'jobs', [
-            'title'          => $request->title,
-            'description'    => $request->description,
-            'location'       => $request->location,
-            'salary'         => $request->salary,
-            'jobType'        => $request->jobType,
-            'maxApplicants' => $request->maxApplicants,
-            'deadline'       => $request->deadline,
-            'latitude'       => $request->latitude,
-            'longitude'      => $request->longitude,
-        ]);
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'location' => $request->location,
+                    'salary' => $request->salary,
+                    'jobType' => $request->jobType,
+                    'maxApplicants' => $request->maxApplicants,
+                    'deadline' => $request->deadline,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                ]);
 
         if ($response->failed()) {
             return back()
@@ -235,4 +236,131 @@ class EmployeController extends Controller
         return back()->with('success', 'Job berhasil dibuat.');
     }
 
+    /**
+     * Buy a subscription plan (ENTRY, MID, or HIGH)
+     */
+    public function buySubscription(Request $request)
+    {
+        $token = session('token');
+
+        $request->validate([
+            'tier' => 'required|in:ENTRY,MID,HIGH',
+        ]);
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->post(env('API_URL') . 'subscriptions', [
+                    'tier' => $request->tier,
+                ]);
+
+        if ($response->failed()) {
+            return back()->with('error', $response->json('message') ?? 'Gagal memproses langganan.');
+        }
+
+        $paymentUrl = $response->json('payment.redirect_url');
+
+        if ($paymentUrl) {
+            return redirect()->away($paymentUrl);
+        }
+
+        return back()->with('error', 'Tidak dapat memproses pembayaran.');
+    }
+
+    /**
+     * Buy one-time quota
+     */
+    public function buyQuota(Request $request)
+    {
+        $token = session('token');
+
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->post(env('API_URL') . 'quotas', [
+                    'quantity' => (int) $request->quantity,
+                ]);
+
+        if ($response->failed()) {
+            return back()->with('error', $response->json('message') ?? 'Gagal memproses pembelian kuota.');
+        }
+
+        $paymentUrl = $response->json('payment.redirect_url');
+
+        if ($paymentUrl) {
+            return redirect()->away($paymentUrl);
+        }
+
+        return back()->with('error', 'Tidak dapat memproses pembayaran.');
+    }
+
+    /**
+     * Show job detail page
+     */
+    public function jobDetail($jobId)
+    {
+        $user = session('user');
+        $token = session('token');
+
+        $response = Http::withToken($token)->get(env('API_URL') . 'employer/jobs/' . $jobId);
+
+        if ($response->failed()) {
+            return redirect()->route('employer.job')->with('error', 'Job tidak ditemukan.');
+        }
+
+        $job = $response->json('data');
+
+        return view('employeer.job-detail', compact('user', 'job'));
+    }
+
+    /**
+     * Show job applicants page
+     */
+    public function jobApplicants($jobId)
+    {
+        $user = session('user');
+        $token = session('token');
+
+        // Get job details
+        $jobResponse = Http::withToken($token)->get(env('API_URL') . 'employer/jobs/' . $jobId);
+
+        if ($jobResponse->failed()) {
+            return redirect()->route('employer.job')->with('error', 'Job tidak ditemukan.');
+        }
+
+        $job = $jobResponse->json('data');
+
+        // Get applicants
+        $applicantsResponse = Http::withToken($token)->get(env('API_URL') . 'jobs/' . $jobId . '/applicants');
+
+        $applicants = $applicantsResponse->json('data') ?? [];
+
+        return view('employeer.job-applicants', compact('user', 'job', 'applicants'));
+    }
+
+    /**
+     * Update application status (Accept/Reject)
+     */
+    public function updateApplicationStatus(Request $request, $applicationId)
+    {
+        $token = session('token');
+
+        $response = Http::withToken($token)
+            ->patch(env('API_URL') . 'applications/' . $applicationId . '/status', [
+                'status' => $request->status,
+            ]);
+
+        if ($response->successful()) {
+            return back()->with('success', 'Status lamaran berhasil diupdate!');
+        }
+
+        return back()->with('error', $response->json('message') ?? 'Gagal mengupdate status.');
+    }
 }
+

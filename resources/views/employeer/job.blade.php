@@ -34,7 +34,9 @@
                         <th>Lokasi</th>
                         <th>Gaji</th>
                         <th>Tipe</th>
+                        <th>Pelamar</th>
                         <th>Status</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,16 +51,26 @@
                                 </span>
                             </td>
                             <td>
+                                <span class="badge bg-primary-subtle text-primary">
+                                    {{ $job['_count']['applications'] ?? 0 }} pelamar
+                                </span>
+                            </td>
+                            <td>
                                 <span
                                     class="badge
-                                    {{ $job['status'] === 'UNPAID' ? 'bg-warning-subtle text-warning' : 'bg-success-subtle text-success' }}">
+                                            {{ $job['status'] === 'UNPAID' ? 'bg-warning-subtle text-warning' : ($job['status'] === 'OPEN' ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary') }}">
                                     {{ $job['status'] }}
                                 </span>
+                            </td>
+                            <td>
+                                <a href="{{ route('employer.job.detail', $job['id']) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-eye"></i> Detail
+                                </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="7" class="text-center text-muted py-4">
                                 Belum ada job dibuat
                             </td>
                         </tr>

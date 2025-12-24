@@ -57,7 +57,9 @@
                             <li class="nav-item"><a class="nav-link" href="{{ route('main.quest') }}">Quest</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('main.my-quests') }}">My Quests</a>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('main.jobs') }}">Jobs</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('main.my-jobs') }}">My Jobs</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('main.about') }}">About</a></li>
                         </ul>
 
                         <!-- PROFILE MOBILE -->
